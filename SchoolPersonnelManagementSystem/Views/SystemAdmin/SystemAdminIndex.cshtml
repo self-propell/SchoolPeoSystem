@@ -1,0 +1,129 @@
+﻿@{
+    ViewData["Title"] = "SystemAdminIndex";
+}
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - My ASP.NET Application</title>
+    <link rel="stylesheet" href="~/css/SystemAdminIndex.css" />
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    <script src="~/js/SystemAdminIndex.js"></script>
+</head>
+<body>
+
+    <header class="main-header">
+
+        <!-- Logo -->
+        <a href="/SystemAdmin" class="logo">
+            <img src="~/source/pic/System_leftup.png" class="logo"/>
+        </a>
+
+        <nav class="navbar navbar-static-top">
+            <!-- Sidebar toggle button-->
+            <a href="" class="sidebar-toggle" data-toggle="push-menu" role="button"></a>
+            <!-- Navbar Right Menu -->
+            <div class="navbar-custom-menu">
+                <!-- 退出按钮 -->
+                <a href="">
+                <span>退出</span> 
+                <i class="fa fa-sign-out" style=""></i>
+                </a>
+            </div>
+
+        </nav>
+    </header>
+
+
+    <div class="main-container">
+        <div class="left-container">
+            <div class="left-container-bottom">
+                <ul>
+                    <li style="align-items:center;">
+                        <a class="sidebar-link" data-id="SystemAdmin?page=main">
+                            <i class="fa fa-house"></i>
+                            <span>首页</span>
+                        </a>
+                        <a class="sidebar-link" data-id="SystemAdmin?page=Account">
+                            <i class="	fa fa-address-card"></i>
+                            <span>账号信息</span>
+                        </a>
+                        <a class="sidebar-link" data-id="SystemAdmin?page=System">
+                            <i class="fa-solid fa-user"></i>
+                            <span>系统监控</span>
+                        </a>
+                        <a class="sidebar-link" data-id="SystemAdmin?page=Log">
+                            <i class="fa-solid fa-user"></i>
+                            <span>日志管理</span>
+                        </a>
+                        <a class="sidebar-link" data-id="SystemAdmin?page=ScheduleTask">
+                            <i class="fa-solid fa-user"></i>
+                            <span>定时任务</span>
+                        </a>
+                        <a class="sidebar-link" data-id="SystemAdmin?page=Module">
+                            <i class="fa-solid fa-user"></i>
+                            <span>模块管理</span>
+                        </a>
+                        <a class="sidebar-link" data-id="SystemAdmin?page=Safety">
+                            <i class="fa-solid fa-user"></i>
+                            <span>安全管理</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="right-container">
+            <div id="content" class="right-container-bottom">
+                <!-- 动态内容将加载处 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            function getParameterByName(name) {
+                name = name.replace(/[\[\]]/g, "\\$&");
+                var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                    results = regex.exec(window.location.href);
+                if (!results) return null;
+                if (!results[2]) return '';
+                return decodeURIComponent(results[2].replace(/\+/g, " "));
+            }
+
+            var page = getParameterByName('page'); // 获取 URL 参数中的 'page' 字段值
+
+            if (page && page !== 'main') {
+                // 如果 'page' 字段值不为 'main'，则调用相应的 AJAX 请求
+                var _url = "SystemAdmin?page=" + page;
+                $.get(_url, function (data) {
+                    $('#content').html(data); // 将返回的内容加载到#content div中
+                });
+            }
+
+            
+            // 侧边栏按钮点击事件响应
+            
+            $('.sidebar-link').click(function (event) {
+                event.preventDefault(); // 阻止默认链接行为
+                var href = $(this).data('id'); // 获取href属性的值
+                var url = new URL(href, window.location.origin);
+                var page = url.searchParams.get("page");
+                if (page === 'main') {
+                    $('#content').empty(); // 清空内容
+                    history.pushState(null, '', href); // 更新浏览器URL
+                }
+                else {
+                    // 使用AJAX请求加载内容
+                    $.get(url, function (data) {
+                        $('#content').html(data); // 将返回的内容加载到#content div中
+                        history.pushState(null, '', href);
+                    });
+                }
+                // 标记当前链接为活动状态
+                $('.sidebar-link').removeClass('active');
+                $(this).addClass('active');
+            });
+        });
+    </script>
+</body>

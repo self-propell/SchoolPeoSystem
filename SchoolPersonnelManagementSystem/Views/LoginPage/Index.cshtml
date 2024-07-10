@@ -1,0 +1,76 @@
+﻿@{
+    ViewData["Title"] = "Login";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - My ASP.NET Application</title>
+    <link rel="stylesheet" href="~/css/LoginPage.css" />
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+</head>
+<body>
+    <div class="grid-container">
+        <div class="info-container">
+            <div class="info-header">
+                信息栏
+            </div>
+            <div>
+            </div>
+        </div>
+        <div class="login-container">
+            <h2>请登录</h2>
+            <form class="form" action="/LoginPage" method="post">
+                <input type="text" name="Username" placeholder="请输入用户名" required />
+                <input type="password" name="Password" placeholder="请输入密码" required />
+
+                    <div class="error-message">
+                    @if (!string.IsNullOrEmpty(ViewData["ErrorMessage"] as string))
+                    {
+                        @ViewData["ErrorMessage"]
+                    }
+                    </div>
+                
+
+                <button type="submit" >登录</button>
+            </form>
+        </div>
+    </div>
+
+
+    <!--JQuery代码，检查用户名密码的合法性-->
+    <script>
+        $(document).ready(function () {
+            // 绑定表单的submit事件
+            $('form.form').submit(function (event) {
+                event.preventDefault();
+                var $errorMessage = $('.error-message');
+                $errorMessage.text('');
+                // 去除用户名和密码输入框中的首尾空格
+                var username = $.trim($('input[name="Username"]').val());
+                var password = $.trim($('input[name="Password"]').val());
+
+                // 用户名和密码的最小长度
+                var minLength = 5;
+
+                // 检查用户名和密码是否符合长度要求
+                if (username.length < minLength) {
+                    $errorMessage.text("用户名长度至少为 " + minLength + "位。");
+                    event.preventDefault(); // 阻止表单提交
+                    return false;
+                }
+
+                if (password.length < minLength) {
+                    $errorMessage.text("密码长度至少为 " + minLength + "位。");
+                    event.preventDefault(); // 阻止表单提交
+                    return false;
+                }
+                // 如果输入合法，提交表单
+                this.submit();
+            });
+        });
+    </script>
+</body>
+</html>

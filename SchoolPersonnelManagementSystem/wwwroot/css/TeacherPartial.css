@@ -1,0 +1,156 @@
+﻿/* 设置表格的整体样式 */
+.table {
+    border-top: 5px;
+    width: 100%;
+    height: auto;
+    border-collapse: collapse;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    table-layout: fixed;
+}
+
+    .table th, .table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* 设置表头的背景颜色和字体样式 */
+    .table th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+        /* 设置各列的宽度百分比 */
+        .table th:nth-child(1),
+        .table td:nth-child(1) {
+            width: 3%; /* 选择框列 */
+        }
+
+        .table th:nth-child(2),
+        .table td:nth-child(2) {
+            width: 15%; /* 账号列 */
+        }
+
+        .table th:nth-child(3),
+        .table td:nth-child(3) {
+            width: 15%; /* 密码列 */
+        }
+
+        .table th:nth-child(4),
+        .table td:nth-child(4) {
+            width: 10%; /* 状态列 */
+        }
+
+        .table th:nth-child(5),
+        .table td:nth-child(5) {
+            width: 30%; /* 备注列 */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .table th:nth-child(6),
+        .table td:nth-child(6) {
+            width: 25%; /* 操作列 */
+        }
+
+        /* 设置操作列的样式 */
+        .table th:nth-child(6) {
+            text-align: center; /* 操作列居中对齐 */
+            vertical-align: middle; /* 垂直居中对齐 */
+        }
+
+/* 设置按钮组的布局 */
+.button-group {
+    display: flex;
+    gap: 10%; /* 按钮之间的间距 */
+}
+
+.search-form {
+    align-items: flex-start; /* 垂直居中 */
+    margin-top:10px;
+    width: 100%; /* 表单宽度 */
+}
+
+.search-input-group {
+    align-items: flex-start;
+    flex-wrap: nowrap; /* 确保不换行 */
+    gap: 8px; /* 每组之间的间距 */
+    border-top: 15px;
+    padding: 8px; /* 内部填充 */
+    grid-template-columns: 15% 15% 15% auto;
+}
+
+.search-info {
+    margin-right: 10px; /* 与输入框的间隔 */
+    white-space: nowrap; /* 防止文本换行 */
+}
+
+.search-input {
+    border: 1px solid #4a4a4a;
+    padding: 8px; /* 内边距 */
+    border-radius: 8px; /* 输入框圆角 */
+    outline: none; /* 点击时无轮廓 */
+    min-width: 150px; /* 设置最小宽度 */
+}
+
+.search-button {
+    background-color: #c0f6ec; /* 按钮背景色 */
+    border: none; /* 无边框 */
+    padding: 10px 12px; /* 内边距 */
+    cursor: pointer; /* 鼠标悬停时显示手形图标 */
+    border-radius: 5px; /* 边框圆角 */
+}
+
+    .search-button:hover {
+        background-color: #0056b3; /* 按钮悬停背景色 */
+    }
+
+/* 单元格样式 */
+.clickable {
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align:baseline;
+}
+
+/* 设置悬浮窗的样式 */
+.popup {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4); /* 黑色背景，透明度40% */
+}
+
+.popup-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    text-align: center;
+}
+
+.popup-close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+    .popup-close:hover,
+    .popup-close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }

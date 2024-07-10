@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35013.160
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchPeoSystem", "SchoolPersonnelManagementSystem\SchPeoSystem.csproj", "{AFA24935-9E18-4BB8-93B7-B551CF50F168}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SCManagementSystemTests", "SCManagementSystemTests\SCManagementSystemTests.csproj", "{E317F631-DA86-4D62-BE64-79FC39F42214}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AFA24935-9E18-4BB8-93B7-B551CF50F168}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFA24935-9E18-4BB8-93B7-B551CF50F168}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFA24935-9E18-4BB8-93B7-B551CF50F168}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFA24935-9E18-4BB8-93B7-B551CF50F168}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E317F631-DA86-4D62-BE64-79FC39F42214}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E317F631-DA86-4D62-BE64-79FC39F42214}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E317F631-DA86-4D62-BE64-79FC39F42214}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E317F631-DA86-4D62-BE64-79FC39F42214}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {34A1D1FA-3389-4B64-B2C2-BCAAC01D9B24}
+	EndGlobalSection
+EndGlobal

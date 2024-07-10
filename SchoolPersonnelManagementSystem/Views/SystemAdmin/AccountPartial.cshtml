@@ -1,0 +1,309 @@
+﻿@model List<MAccount>
+<head>
+    <link href="~/css/AccountPartial.css" rel="stylesheet" type="text/css" />
+</head>
+
+<h2>账号信息</h2>
+<div style="border-top: 1px solid #ccc;"></div>
+<form class="search-form" action="/SystemAdmin/SearchAcc" method="post">
+    <span class="search-input-group">
+        <span class="search-info">账号：</span>
+        <input type="text" class="search-input" placeholder="输入搜索账号名" value="@ViewBag.AccId">
+        <span class="search-info">状态：</span>
+        <select class="search-input" name="Status">
+            <option value="active">启用</option>
+            <option value="freeze">冻结</option>
+            <option value="deleted">已删除</option>
+        </select>
+        <span class="search-info">备注：</span>
+        <input type="text" class="search-input" placeholder="输入搜索备注内容" value="@ViewBag.Description">
+    </span>
+    <button type="submit" class="search-button" id="info-select">搜索</button>
+</form>
+<table class="table" style="margin-top:10px;">
+    <thead>
+        <tr>
+            <th><input type="checkbox" id="select-all"></th>
+            <th style="text-align:center">账号</th>
+            <th style="text-align:center">密码</th>
+            <th style="text-align:center">状态</th>
+            <th style="text-align:center">备注</th>
+            <th>
+                <span class="button-group">
+                    <button type="button" class="btn btn-warning btn-group-reset-password">批量重置密码</button>
+                    <button type="button" class="btn btn-danger btn-group-delete-account">批量删除</button>
+                </span>
+            </th>
+        </tr>
+    </thead>
+    <tbody class="account-list">
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var account in Model)
+            {
+                <tr>
+                    <td style="text-align:center"><input type="checkbox" class="select-item" data-id="@account.Login_Id"></td>
+                    <td style="text-align:center">@account.Login_Id</td>
+                    <td style="text-align:center">@account.Password</td>
+                    <td style="text-align:center">@(account.Is_Deleted ? "已删除" : account.Is_Freezed ? "已停用" : "启用中")</td>
+                    <td class="clickable">
+                        @account.Description
+                    </td>
+                    <td>
+                        <span class="button-group">
+                            <button type="button" class="btn btn-warning btn-reset-password" data-id="@account.Login_Id">重置密码</button>
+                            <button type="button" class="btn btn-secondary btn-freeze-account" data-id="@account.Login_Id">@(account.Is_Freezed ? "启用" : "停用")</button>
+                            <button type="button" class="btn btn-danger btn-delete-account" data-id="@account.Login_Id">删除</button>
+                        </span>
+
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<div id="popup" class="popup">
+    <div class="popup-content">
+        <span class="popup-close">&times;</span>
+        <p id="popup-text"></p>
+    </div>
+</div>
+
+<!--JQuery代码，检查用户名密码的合法性-->
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+    $(document).ready(function () {
+        function refreshAccountList() {
+            location.reload();
+        }
+
+        // 搜索按钮点击事件
+        $('#info-select').click(function (event) {
+            event.preventDefault();
+            // 获取输入框信息，去除空格
+            var account = $.trim($('input[placeholder="输入搜索账号ID"]').val());
+            var status = $.trim($('select.search-input').val());
+            var description = $.trim($('input[placeholder="输入搜索备注内容"]').val());
+            // 执行搜索逻辑，通过Ajax请求数据
+            $.ajax({
+                type: "POST",
+                url: "/SystemAdmin/SearchAcc",
+                data: {
+                    AccId: account,
+                    Status: status,
+                    Description: description
+                },
+                success: function (data) {
+                    // 处理返回的数据，更新页面内容
+                    $('#content').html(data);
+                },
+                error: function () {
+                    alert("搜索失败，请稍后重试");
+                }
+            });
+        });
+
+        // 全选按钮点击事件
+        $('#select-all').click(function () {
+            var checked = this.checked;
+            $('.select-item').each(function () {
+                this.checked = checked;
+            });
+        });
+
+        // 复选框点击事件
+        $('.select-item').click(function () {
+            var allChecked = $('.select-item').length === $('.select-item:checked').length;
+            $('#select-all').prop('checked', allChecked);
+        });
+
+        // 顶部重置按钮点击事件【复选账户后批量重置密码】
+        $('.btn-group-reset-password').click(function () {
+            var selectedAccIds = [];
+            $('.select-item:checked').each(function () {
+                selectedAccIds.push($(this).data('id'));
+            });
+            if (selectedAccIds.length === 0) {
+                alert("请选择至少一个账号进行重置");
+                return;
+            }
+            // 弹窗提示
+            var accountIdsString = selectedAccIds.join(", ");
+            var confirmation = confirm('将为以下账号重置密码: ' + accountIdsString);
+            if (!confirmation) {
+                // 用户取消操作
+                return;
+            }
+            // ajax提交后端操作
+            $.ajax({
+                type: "POST",
+                url: "/SystemAdmin/ResetAccPasswd",
+                contentType: "application/json",
+                data: JSON.stringify(selectedAccIds),
+                success: function (response) {
+                    if (response.success) {
+                        alert("密码重置成功！" + response.result);
+                        refreshAccountList(); // 成功后重新加载数据列表
+                    } else {
+                        alert("密码重置出现错误！" + response.result);
+                    }
+                },
+                error: function (xhr) {
+                    alert("请求失败: " + xhr.responseText);
+                }
+            });
+        });
+
+        // 每个账号后方重置密码按钮点击事件
+        $('.btn-reset-password').click(function () {
+            var selectedAccIds = [];
+            selectedAccIds.push($(this).data('id'));
+            // 弹窗提示
+            var accountIdsString = selectedAccIds.join(", ");
+            var confirmation = confirm('将为以下账号重置密码: ' + accountIdsString);
+            if (!confirmation) {
+                // 用户取消操作
+                return;
+            }
+            // ajax提交后端操作
+            $.ajax({
+                type: "POST",
+                url: "/SystemAdmin/ResetAccPasswd",
+                contentType: "application/json",
+                data: JSON.stringify(selectedAccIds),
+                success: function (response) {
+                    if (response.success) {
+                        alert("密码重置成功！" + response.result);
+                        refreshAccountList(); // 成功后重新加载数据列表
+                    } else {
+                        alert("密码重置出现错误！" + response.result);
+                    }
+                },
+                error: function (xhr) {
+                    alert("请求失败: " + xhr.responseText);
+                }
+            });
+        });
+
+        // 冻结/解冻按钮点击事件
+        $('.btn-freeze-account').click(function () {
+            var selectedAccIds = [];
+            selectedAccIds.push($(this).data('id'));
+            // 弹窗提示
+            var accountIdsString = selectedAccIds.join(", ");
+            var _text = $(this).html();
+            var confirmation = confirm('将' + _text + '账号: ' + accountIdsString);
+            if (!confirmation) {
+                // 用户取消操作
+                return;
+            }
+            // ajax提交后端操作
+            $.ajax({
+                type: "POST",
+                url: "/SystemAdmin/FreezeAcc",
+                contentType: "application/json",
+                data: JSON.stringify(selectedAccIds),
+                success: function (response) {
+                    if (response.success) {
+                        alert(_text + "成功！" + response.result);
+                        refreshAccountList(); // 切换成功后重新加载数据列表
+                    } else {
+                        alert("状态切换出现错误！" + response.result);
+                    }
+                },
+                error: function (xhr) {
+                    alert("请求失败: " + xhr.responseText);
+                }
+            });
+        });
+
+        // 删除按钮点击事件
+        $('.btn-delete-account').click(function () {
+            var selectedAccIds = [];
+            selectedAccIds.push($(this).data('id'));
+            // 弹窗提示
+            var accountIdsString = selectedAccIds.join(", ");
+            var _text = $(this).html();
+            var confirmation = confirm('将' + _text + '账号: ' + accountIdsString);
+            if (!confirmation) {
+                // 用户取消操作
+                return;
+            }
+            // ajax提交后端操作
+            $.ajax({
+                type: "POST",
+                url: "/SystemAdmin/DeleteAcc",
+                contentType: "application/json",
+                data: JSON.stringify(selectedAccIds),
+                success: function (response) {
+                    if (response.success) {
+                        alert(_text + "成功！" + response.result);
+                        refreshAccountList(); // 切换成功后重新加载数据列表
+                    } else {
+                        alert(_text+"出现错误！" + response.result);
+                    }
+                },
+                error: function (xhr) {
+                    alert("请求失败: " + xhr.responseText);
+                }
+            });
+        });
+
+        // 顶部删除按钮点击事件【复选账户后批量删除】
+        $('.btn-group-delete-account').click(function () {
+            var selectedAccIds = [];
+            $('.select-item:checked').each(function () {
+                selectedAccIds.push($(this).data('id'));
+            });
+            if (selectedAccIds.length === 0) {
+                alert("请选择至少一个账号进行删除");
+                return;
+            }
+            // 弹窗提示
+            var accountIdsString = selectedAccIds.join(", ");
+            var confirmation = confirm('将删除以下账号: ' + accountIdsString);
+            if (!confirmation) {
+                // 用户取消操作
+                return;
+            }
+            // ajax提交后端操作
+            $.ajax({
+                type: "POST",
+                url: "/SystemAdmin/DeleteAcc",
+                contentType: "application/json",
+                data: JSON.stringify(selectedAccIds),
+                success: function (response) {
+                    if (response.success) {
+                        alert("删除成功！" + response.result);
+                        refreshAccountList(); // 成功后重新加载数据列表
+                    } else {
+                        alert("删除出现错误！" + response.result);
+                    }
+                },
+                error: function (xhr) {
+                    alert("请求失败: " + xhr.responseText);
+                }
+            });
+        });
+
+
+        // 点击单元格时弹出悬浮窗
+        $('.clickable').on('click', function () {
+            var cellContent = $(this).text(); // 获取单元格内容
+            $('#popup-text').text(cellContent); // 设置悬浮窗内容
+            $('#popup').show(); // 显示悬浮窗
+        });
+
+        // 点击关闭按钮时隐藏悬浮窗
+        $('.popup-close').on('click', function () {
+            $('#popup').hide(); // 隐藏悬浮窗
+        });
+
+        // 点击悬浮窗外部时隐藏悬浮窗
+        $(window).on('click', function (event) {
+            if ($(event.target).is('#popup')) {
+                $('#popup').hide(); // 隐藏悬浮窗
+            }
+        });
+    });
+</script>
